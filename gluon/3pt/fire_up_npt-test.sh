@@ -22,15 +22,15 @@ pushd ${scratch_dir}/out
 
 cat <<EOF > ${filename}
 #!/bin/bash
+#SBATCH -C cpu
 #SBATCH -o out_eig_${cfg}
 #SBATCH --job-name=${cfg}_red
 #SBATCH -A hadron
 #SBATCH -q regular
 #SBATCH -t 4:00:00
 #SBATCH -N 1
-#SBATCH -c 2
-#SBATCH -C cpu
-#SBATCH --ntasks-per-node=128
+##SBATCH -c 2
+##SBATCH --ntasks-per-node=128
 
 export SLURM_CPU_BIND="cores"
 module load python
@@ -43,7 +43,7 @@ zeta=0
 for pz in 0
 do
 
-${here}/npt.sh \$T 0 0 \$pz $cfg 0.00 $stream
+${here}/npt-test.sh \$T 0 0 \$pz $cfg 0.00 $stream
 
 done
 
