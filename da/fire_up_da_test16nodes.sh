@@ -8,8 +8,8 @@ mkdir -p ${scratch_dir}/sub
 mkdir -p ${scratch_dir}/xml
 mkdir -p ${scratch_dir}/out
 
-
 mkdir -p "/users/karpiejo/scratch/CLS_Nf2/G8/mes_2pt/${cfg}"
+
 
 name_stem="da_bundle_${cfg}"
 filename=${scratch_dir}/sub/${name_stem}.sh
@@ -23,12 +23,12 @@ pushd ${scratch_dir}/out
 cat <<EOF > ${filename}
 #!/bin/bash
 #SBATCH -o out_${cfg}
-#SBATCH -e out_${cfg}
+#SBATCH -e err_${cfg}
 #SBATCH --job-name=da_${cfg}
 #SBATCH -A project_465000563
 #SBATCH -t 24:00:00
 #SBATCH -p standard-g
-#SBATCH -N 8 -n64 --gpus-per-task=1 --gpu-bind=none
+#SBATCH -N 16 -n128 --gpus-per-task=1 --gpu-bind=none
 
 
 
@@ -68,7 +68,7 @@ export MPICH_GPU_SUPPORT_ENABLED=1
 
 srun --cpu-bind=threads --threads-per-core=1 -c6 \
      ${chroma} \
-     -geom 2 2 4 4  -poolsize 0k  -pool-max-alloc 0 -pool-max-alignment 512 \
+     -geom 2 2 4 8  -poolsize 0k  -pool-max-alloc 0 -pool-max-alignment 512 \
      -i ${scratch_dir}/xml/${name_stem}.ini.xml -o ${scratch_dir}/xml/${name_stem}.out.xml 
 
 
