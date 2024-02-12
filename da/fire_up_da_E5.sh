@@ -1,7 +1,7 @@
 #!/bin/bash
 cfg=$1
 
-
+here=`pwd`
 
 scratch_dir="/users/karpiejo/scratch/CLS_Nf2/E5/da_runs/"
 mkdir -p ${scratch_dir}/sub
@@ -15,7 +15,7 @@ name_stem="da_bundle_${cfg}"
 filename=${scratch_dir}/sub/${name_stem}.sh
 
 
-chromaform="/users/karpiejo/chromaform"
+chromaform="/users/karpiejo/scratch/chromaform1"
 chroma="$chromaform/install/chroma-quda-qdp-jit-double-nd4-cmake/bin/chroma"
 
 pushd ${scratch_dir}/out
@@ -27,7 +27,7 @@ cat <<EOF > ${filename}
 #SBATCH --job-name=da_${cfg}
 #SBATCH -A project_465000563
 #SBATCH -t 24:00:00
-#SBATCH -p standard-g
+#SBATCH -p ju-standard-g
 #SBATCH -N 1 -n8 --gpus-per-task=1 --gpu-bind=none
 
 
@@ -62,6 +62,7 @@ export OMP_NUM_THREADS=6
 export OPENBLAS_NUM_THREADS=1
 source ${chromaform}/env.sh
 source ${chromaform}/env_extra.sh
+source ${here}/env.sh
 
 
 export MPICH_GPU_SUPPORT_ENABLED=1

@@ -1,6 +1,7 @@
 #!/bin/bash
 cfg=$1
 
+here=`pwd`
 
 
 scratch_dir="/users/karpiejo/scratch/CLS_Nf2/G8/da_runs/"
@@ -15,7 +16,7 @@ name_stem="da_bundle_${cfg}"
 filename=${scratch_dir}/sub/${name_stem}.sh
 
 
-chromaform="/users/karpiejo/chromaform"
+chromaform="/users/karpiejo/scratch/chromaform1"
 chroma="$chromaform/install/chroma-quda-qdp-jit-double-nd4-cmake/bin/chroma"
 
 pushd ${scratch_dir}/out
@@ -27,7 +28,7 @@ cat <<EOF > ${filename}
 #SBATCH --job-name=da_${cfg}
 #SBATCH -A project_465000563
 #SBATCH -t 24:00:00
-#SBATCH -p standard-g
+#SBATCH -p ju-standard-g
 #SBATCH -N 8 -n64 --gpus-per-task=1 --gpu-bind=none
 
 
@@ -48,10 +49,10 @@ CPU_BIND="${CPU_BIND},7e00000000,7e0000000000"
 
 
 
-rho="2.0"
+rho="5.0"
 /users/karpiejo/run_scripts/chroma_python/pseudo_da_cls_bundle.py \
-     -g "/users/karpiejo/scratch/CLS_Nf2/G8/cfgs/128x64x64x64b5.30k0.13642c1.90952id30n" \
-     -k 2 -c $cfg -r \${rho} -p 16 \
+     -g "/users/karpiejo/scratch/dank_CLS_Nf2/G8/cfgs/128x64x64x64b5.30k0.13642c1.90952id30n" \
+     -k 1 -c $cfg -r \${rho} -p 16 \
      -s "/users/karpiejo/scratch//CLS_Nf2/G8/mes_2pt/" \
      -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}.ini.xml
 
@@ -62,7 +63,7 @@ export OMP_NUM_THREADS=6
 export OPENBLAS_NUM_THREADS=1
 source ${chromaform}/env.sh
 source ${chromaform}/env_extra.sh
-
+source ${here}/env.sh
 
 export MPICH_GPU_SUPPORT_ENABLED=1
 
