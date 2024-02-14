@@ -4,13 +4,13 @@ cfg=$1
 here=`pwd`
 
 
-scratch_dir="/users/karpiejo/scratch/CLS_Nf2/G8/da_runs/"
+scratch_dir="/users/karpiejo/scratch/CLS_Nf2/O7/da_runs/"
 mkdir -p ${scratch_dir}/sub
 mkdir -p ${scratch_dir}/xml
 mkdir -p ${scratch_dir}/out
 
 
-mkdir -p "/users/karpiejo/scratch/CLS_Nf2/G8/mes_2pt/${cfg}"
+mkdir -p "/users/karpiejo/scratch/CLS_Nf2/O7/mes_2pt/${cfg}"
 
 name_stem="da_bundle_${cfg}"
 filename=${scratch_dir}/sub/${name_stem}.sh
@@ -49,12 +49,15 @@ CPU_BIND="${CPU_BIND},7e00000000,7e0000000000"
 
 
 
-rho="5.0"
+for rho in "2.0" "3.0" "4.0" "5.0" "6.0" "7.0"
+do
+
 /users/karpiejo/run_scripts/chroma_python/pseudo_da_cls_bundle.py \
-     -g "/users/karpiejo/scratch/dank_CLS_Nf2/G8/cfgs/128x64x64x64b5.30k0.13642c1.90952id30n" \
-     -k 1 -c $cfg -r \${rho} -p 16 \
-     -s "/users/karpiejo/scratch//CLS_Nf2/G8/mes_2pt/" \
-     -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}.ini.xml
+     -e "O7" \
+     -g "/users/karpiejo/scratch/CLS_Nf2/" \
+     --ksourcemin 1 --ksourcemax 4  -c $cfg -r \${rho} -p 16 \
+     -s "/users/karpiejo/scratch//CLS_Nf2/O7/mes_2pt/" \
+     -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml
 
 
 
@@ -63,6 +66,7 @@ export OMP_NUM_THREADS=6
 export OPENBLAS_NUM_THREADS=1
 source ${chromaform}/env.sh
 source ${chromaform}/env_extra.sh
+source ${chromaform}/env_extra_chroma.sh
 source ${here}/env.sh
 
 export MPICH_GPU_SUPPORT_ENABLED=1
@@ -70,8 +74,9 @@ export MPICH_GPU_SUPPORT_ENABLED=1
 srun --cpu-bind=threads --threads-per-core=1 -c6 \
      ${chroma} \
      -geom 2 2 4 4  -poolsize 0k  -pool-max-alloc 0 -pool-max-alignment 512 \
-     -i ${scratch_dir}/xml/${name_stem}.ini.xml -o ${scratch_dir}/xml/${name_stem}.out.xml 
+     -i ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml -o ${scratch_dir}/xml/${name_stem}_r\${rho}.out.xml 
 
+done
 
 EOF
 
