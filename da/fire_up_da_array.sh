@@ -23,23 +23,24 @@ pushd ${scratch_dir}/out
 
 cat <<EOF > ${filename}
 #!/bin/bash
-#SBATCH -o out_${cfg}
-#SBATCH -e out_${cfg}
+#SBATCH --array=0-10
+#SBATCH -o slurm_out_${cfg}
+#SBATCH -e slurm_out_${cfg}
 #SBATCH --job-name=da_${cfg}
 #SBATCH -A project_465000563
-#SBATCH -t 24:00:00
+#SBATCH -t 12:00:00
 #SBATCH -p ju-standard-g
 #SBATCH -N 8 -n64 --gpus-per-task=1 --gpu-bind=none
 
 
 
-rm select_gpu_\$SLURM_JOB_ID
-echo '#!/bin/bash' >> select_gpu_\$SLURM_JOB_ID
-echo 'export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID '  >> select_gpu_\$SLURM_JOB_ID
-echo 'exec \$* ' >> select_gpu_\$SLURM_JOB_ID
+rm select_gpu
+echo '#!/bin/bash' >> select_gpu
+echo 'export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID '  >> select_gpu
+echo 'exec \$* ' >> select_gpu
 
 
-chmod +x select_gpu_\$SLURM_JOB_ID
+chmod +x select_gpu
 
 CPU_BIND="mask_cpu:7e000000000000,7e00000000000000"
 CPU_BIND="${CPU_BIND},7e0000,7e000000"
@@ -47,17 +48,17 @@ CPU_BIND="${CPU_BIND},7e,7e00"
 CPU_BIND="${CPU_BIND},7e00000000,7e0000000000"
 
 
-
-
+cc=\$((${cfg} + \${SLURM_ARRAY_TASK_ID}))
+name_stem="da_bundle_\${cc}"
 for rho in "7.5"
 do
 
 /users/karpiejo/run_scripts/chroma_python/pseudo_da_cls_bundle.py \
      -e "O7" \
      -g "/users/karpiejo/scratch/CLS_Nf2/" \
-     --ksourcemin 1 --ksourcemax 65  -c $cfg -r \${rho} -p 16 \
+     --ksourcemin 17 --ksourcemax 65  -c \${cc} -r \${rho} -p 16 \
      -s "/users/karpiejo/scratch//CLS_Nf2/O7/mes_2pt/" \
-     -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml
+     -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/\${name_stem}_r\${rho}.ini.xml
 
 
 
@@ -74,7 +75,7 @@ export MPICH_GPU_SUPPORT_ENABLED=1
 srun --cpu-bind=threads --threads-per-core=1 -c6 \
      ${chroma} \
      -geom 2 2 4 4  -poolsize 0k  -pool-max-alloc 0 -pool-max-alignment 512 \
-     -i ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml -o ${scratch_dir}/xml/${name_stem}_r\${rho}.out.xml 
+     -i ${scratch_dir}/xml/\${name_stem}_r\${rho}.ini.xml -o ${scratch_dir}/xml/\${name_stem}_r\${rho}.out.xml >& out_\${cc}
 
 done
 
