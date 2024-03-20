@@ -19,6 +19,8 @@ filename=${scratch_dir}/sub/${name_stem}.sh
 chromaform="/users/karpiejo/scratch/chromaform1"
 chroma="$chromaform/install/chroma-quda-qdp-jit-double-nd4-cmake/bin/chroma"
 
+Nbundle=8
+
 pushd ${scratch_dir}/out
 
 cat <<EOF > ${filename}
@@ -33,13 +35,13 @@ cat <<EOF > ${filename}
 
 
 
-rm select_gpu_\$SLURM_JOB_ID
-echo '#!/bin/bash' >> select_gpu_\$SLURM_JOB_ID
-echo 'export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID '  >> select_gpu_\$SLURM_JOB_ID
-echo 'exec \$* ' >> select_gpu_\$SLURM_JOB_ID
+rm select_gpu
+echo '#!/bin/bash' >> select_gpu
+echo 'export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID '  >> select_gpu
+echo 'exec \$* ' >> select_gpu
 
 
-chmod +x select_gpu_\$SLURM_JOB_ID
+chmod +x select_gpu
 
 CPU_BIND="mask_cpu:7e000000000000,7e00000000000000"
 CPU_BIND="${CPU_BIND},7e0000,7e000000"
@@ -48,16 +50,18 @@ CPU_BIND="${CPU_BIND},7e00000000,7e0000000000"
 
 
 
+rho="7.5"
 
-for rho in "7.5"
+for cfg in {${cfg}..$((cfg+Nbundle))}
 do
+name_stem="da_bundle_\${cfg}"
 
 /users/karpiejo/run_scripts/chroma_python/pseudo_da_cls_bundle.py \
      -e "O7" \
      -g "/users/karpiejo/scratch/CLS_Nf2/" \
-     --ksourcemin 65 --ksourcemax 129  -c $cfg -r \${rho} -p 16 \
+     --ksourcemin 65 --ksourcemax 129  -c \$cfg -r \${rho} -p 16 \
      -s "/users/karpiejo/scratch//CLS_Nf2/O7/mes_2pt/" \
-     -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml
+     -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/\${name_stem}_r\${rho}.ini.xml
 
 
 
@@ -74,7 +78,7 @@ export MPICH_GPU_SUPPORT_ENABLED=1
 srun --cpu-bind=threads --threads-per-core=1 -c6 \
      ${chroma} \
      -geom 2 2 4 4  -poolsize 0k  -pool-max-alloc 0 -pool-max-alignment 512 \
-     -i ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml -o ${scratch_dir}/xml/${name_stem}_r\${rho}.out.xml 
+     -i ${scratch_dir}/xml/\${name_stem}_r\${rho}.ini.xml -o ${scratch_dir}/xml/\${name_stem}_r\${rho}.out.xml
 
 done
 
@@ -83,3 +87,4 @@ EOF
 sbatch ${filename}
 
 popd
+

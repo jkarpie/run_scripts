@@ -1,16 +1,16 @@
 #!/bin/bash
 
-if [ $# -ne 2 ]; then
-    echo "Usage: $0 <task file> <queue>"
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 <task file> "
     exit 1
 fi
 
 TASKS=$1
-QUEUE=$2
+QUEUE=ju-stand
 QLIM=100
 
 while [ `wc -l $TASKS | awk '{printf $1}'` -ne 0 ]; do
-    sleep 20m
+    #sleep 2m
     if [ `squeue -u $USER | grep $QUEUE | wc -l` -lt $QLIM ]; then
 
         dif=$(( $QLIM - `squeue -u $USER | grep $QUEUE | wc -l` ))
@@ -21,4 +21,5 @@ while [ `wc -l $TASKS | awk '{printf $1}'` -ne 0 ]; do
         done
 
     fi
+    sleep 20m
 done

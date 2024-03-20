@@ -33,13 +33,13 @@ cat <<EOF > ${filename}
 
 
 
-rm select_gpu_\$SLURM_JOB_ID
-echo '#!/bin/bash' >> select_gpu_\$SLURM_JOB_ID
-echo 'export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID '  >> select_gpu_\$SLURM_JOB_ID
-echo 'exec \$* ' >> select_gpu_\$SLURM_JOB_ID
+rm select_gpu
+echo '#!/bin/bash' >> select_gpu
+echo 'export ROCR_VISIBLE_DEVICES=\$SLURM_LOCALID '  >> select_gpu
+echo 'exec \$* ' >> select_gpu
 
 
-chmod +x select_gpu_\$SLURM_JOB_ID
+chmod +x select_gpu
 
 CPU_BIND="mask_cpu:7e000000000000,7e00000000000000"
 CPU_BIND="${CPU_BIND},7e0000,7e000000"
@@ -49,13 +49,13 @@ CPU_BIND="${CPU_BIND},7e00000000,7e0000000000"
 
 
 
-for rho in "7.5"
+for rho in "9.0"
 do
 
-/users/karpiejo/run_scripts/chroma_python/pseudo_da_cls_bundle.py \
+/users/karpiejo/run_scripts/chroma_python/pseudo_da_cls_bundle2.py \
      -e "O7" \
      -g "/users/karpiejo/scratch/CLS_Nf2/" \
-     --ksourcemin 65 --ksourcemax 129  -c $cfg -r \${rho} -p 16 \
+     --ksourcemin 1 --ksourcemax 4  -c $cfg -r \${rho} -p 16 \
      -s "/users/karpiejo/scratch//CLS_Nf2/O7/mes_2pt/" \
      -w /users/karpiejo/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}_r\${rho}.ini.xml
 
