@@ -29,7 +29,7 @@ cat <<EOF > ${filename}
 #SBATCH -e out_${cfg}
 #SBATCH --job-name=gluon_${cfg}
 #SBATCH -A project_465000563
-#SBATCH -t 00:20:00
+#SBATCH -t 16:00:00
 #SBATCH -p ju-standard-g
 #SBATCH -N 1 -n8 --gpus-per-task=1 --gpu-bind=none
 
@@ -86,9 +86,11 @@ srun --cpu-bind=threads --threads-per-core=1 -c6 \
      -i ${scratch_dir}/xml/${name_stem}.ini.xml -o ${scratch_dir}/xml/${name_stem}.out.xml
 
 
+/users/karpiejo/run_scripts/gluon/fire_up_npt_gluon.sh $cfg
 
 EOF
 
 sbatch ${filename}
+
 
 popd

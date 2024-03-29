@@ -212,8 +212,8 @@ EOF
 opins="FSq_EE_J0_A1"
 
 for tsep in 6 ; do
-for rf in 1 2 ; do 
-for ri in 1 2 ; do 
+for rf in 1  ; do 
+for ri in 1  ; do 
 for opf in `cat $opf_file | awk '{print $1}'` ; do 
 for opi in `cat $opi_file | awk '{print $1}'` ; do 
 
@@ -280,8 +280,8 @@ cat <<EOF >> $xml_name
 EOF
 
 # Now loop over 3pt functions
-for rins in {1..36} ; do 
-for z in {0..6}; do
+for rins in {1..6} ; do 
+for z in {0..2}; do
 	disp_list=""
 	s=""
 	if [ $z -lt 0 ] ; then s="-1" ; fi
