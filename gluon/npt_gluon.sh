@@ -156,7 +156,7 @@ if [ $PHASE == '0.00' ]; then
     PERAM=${PROJ}/prop_db/${ENSEM}.prop.n${NVEC}.light.t0_${TOFFSET}
     #### MY PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_z2_light_peram.11000.T60.peram
     #PERAM=${PROJ}/peram/${CFG}/${ENSEM}_z0_light_peram
-    DUMP=/user/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/unphased/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
+    DUMP=/users/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/unphased/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
     LOG=${run_dir}/${ENSEM}/out_z0
 
     mkdir -p /tmp/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/unphased/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}/run${CFG}/
@@ -173,12 +173,12 @@ else
     PERAM=${PROJ}/phased/prop_db/d001_${PHASE}/${ENSEM}.phased_${PHASE}.prop.n${NVECTMP}.light.t0_${TOFFSET}
     #### MY PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_z2_light_peram.11000.T60.peram
     #PERAM=${PROJ}/peram/${CFG}/${ENSEM}_z${PHASE}_light_peram
-    DUMP=/users/karpiejo/scratch/redstar_runs/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
-    LOG=/users/karpiejo/scratch/redstar_runs/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}
+    DUMP=/users/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
+    LOG=/users/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}
     LOG=${run_dir}/${ENSEM}/out_z$PHASE
 
-    mkdir -p /tmp/karpiejo/scratch/redstar_runs/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}/run${CFG}/
-    BOP=/tmp/karpiejo/scratch/redstar_runs/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}/run${CFG}/${ENSEM}.n${NVEC}.phased_${PHASE}.t0_${TOFFSET}.NtFwd_${NT_FWD}.baryon.colorvec
+    mkdir -p /tmp/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}/run${CFG}/
+    BOP=/tmp/karpiejo/scratch/redstar_run/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}/run${CFG}/${ENSEM}.n${NVEC}.phased_${PHASE}.t0_${TOFFSET}.NtFwd_${NT_FWD}.baryon.colorvec
     OUT=${PROJ}/2ptcorrs/phased/${PHASEDIR}
 fi
 echo "DUMPBASE = ${DUMP}"
@@ -251,7 +251,7 @@ $PYDIR/baryon_elem.py -c $CFG -e $ENSEM -g $CFGPREF_CHR -n $NVEC \
 export OMP_NUM_THREADS=6
 export OPENBLAS_NUM_THREADS=1
 chromaform="/users/karpiejo/scratch/chromaform1/"
-CHROMA="${chromaform}/install/chroma-quda-qdp-jit-double-nd4-cmake-superbblas-hip/bin/chroma"
+CHROMA="${chromaform}/install/chroma-restructure-quda-qdp-jit-double-nd4-cmake-superbblas-hip/bin/chroma"
 CHROMA_EX="-by 4 -bz 4 -pxy 0 -pxyz 0 -c $OMP_NUM_THREADS -sy 1 -sz 1 -minct 1"
 GEOM="-geom 2 2 2 1"
 
@@ -273,28 +273,17 @@ srun --cpu-bind=threads --threads-per-core=1 -c6 \
 ####export NPT_BATCH_SIZE=1
 ####export KMP_AFFINITY=scatter,granularity=fine
 
-echo "Setting up the input files for redstar"    
-#########################
-# XMLS FOR THIS OPERATOR
-#########################
-${PYDIR}/redstar_gluon_3pt.py -c $CFG -e $ENSEM -i $nucOps -f $nucOps \
-    -p $MOM -r $TCORR -t $T_ORIGIN \
-    -s 0 -n "smeared_hadron_node" -u "unsmeared_hadron_node" -o $DB \
-    -y "baryon_3pt" -g "." -x 1 --no_writing_nodes \
-    --nvecs=$NVEC --prop_db_prefix=$PERAM -b $BOP -v 12 > xml/nucleon_control.xml$CFG
-
-
 
 GLUON_DIR="/users/karpiejo/scratch/gluon_ops/$ENSEM/dbs/gpdf.sdb"
+mkdir xml
 
-./make_redstar_gluon_xml.sh xml/nucleon_control.xml$CFG $MOMX $MOMY $MOMZ $MOMX $MOMY $MOMZ $CFG $T_ORIGIN ${PERAM}.sdb${CFG} ${BOP}.sdb${CFG} ${GLUON_DIR}
-
+echo "/users/karpiejo/run_scripts/gluon/make_redstar_gluon_xml.sh xml/nucleon_control.xml$CFG $MOMX $MOMY $MOMZ $MOMX $MOMY $MOMZ $CFG $TOFFSET ${PERAM}.sdb${CFG} ${BOP}.sdb${CFG} ${GLUON_DIR}"
+/users/karpiejo/run_scripts/gluon/make_redstar_gluon_xml.sh xml/nucleon_control.xml$CFG $MOMX $MOMY $MOMZ $MOMX $MOMY $MOMZ $CFG $TOFFSET ${PERAM}.sdb${CFG} ${BOP}.sdb${CFG} ${GLUON_DIR}
 
 # Need to fixx placement of thrreads on cores
 echo "Running redstar at " `date`
 
 source ${chromaform}/env.sh
-
 /users/karpiejo/run_scripts/gluon/run_redstar_int.gluon_3pt.no-nodes.sh \
     xml/nucleon_control.xml$CFG >& ${LOG}/run${CFG}/DB$CFG
 

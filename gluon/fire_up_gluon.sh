@@ -29,7 +29,7 @@ cat <<EOF > ${filename}
 #SBATCH -e out_${cfg}
 #SBATCH --job-name=gluon_${cfg}
 #SBATCH -A project_465000563
-#SBATCH -t 16:00:00
+#SBATCH -t 02:00:00
 #SBATCH -p ju-standard-g
 #SBATCH -N 1 -n8 --gpus-per-task=1 --gpu-bind=none
 

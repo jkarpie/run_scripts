@@ -12,7 +12,7 @@ qz=$((piz-pfz))
 q="$qx $qy $qz"
 
 cfg=$8
-t0=${10}
+t0=$9
 # Find t_origin
 TSIZE=64
 T_INI="$( perl -e "
@@ -30,9 +30,9 @@ T_INI="$( perl -e "
 t_origin=$(( ( $T_INI + $t0 ) % $TSIZE ))
 
 
-prop_db=${11}
-bop_db=${12}
-glue_db=${13}
+prop_db=${10}
+bop_db=${11}
+glue_db=${12}
 
 
 # Find which irrep the momenta belong to and set their op files and mom_types
@@ -182,7 +182,6 @@ else
 fi
 
 
-
 cat << EOF > $xml_name
 <?xml version="1.0"?>
 <RedstarNPt>
@@ -280,8 +279,8 @@ cat <<EOF >> $xml_name
 EOF
 
 # Now loop over 3pt functions
-for rins in {1..6} ; do 
-for z in {0..2}; do
+for rins in {1..4} ; do 
+for z in {0..1}; do
 	disp_list=""
 	s=""
 	if [ $z -lt 0 ] ; then s="-1" ; fi

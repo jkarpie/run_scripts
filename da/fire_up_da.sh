@@ -17,7 +17,7 @@ filename=${scratch_dir}/sub/${name_stem}.sh
 
 
 chromaform="/users/karpiejo/scratch/chromaform1"
-chroma="$chromaform/install/chroma-quda-qdp-jit-double-nd4-cmake/bin/chroma"
+chroma="$chromaform/install/chroma-restructure-quda-qdp-jit-double-nd4-cmake/bin/chroma"
 
 pushd ${scratch_dir}/out
 

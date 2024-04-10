@@ -15,17 +15,16 @@ mkdir -p ${scratch_dir}/out
 
 name_stem="redstar_${cfg}"
 filename=${scratch_dir}/sub/${name_stem}.sh
-
-
+chromaform="/users/karpiejo/scratch/chromaform1"
 pushd ${scratch_dir}/out
 
 cat <<EOF > ${filename}
 #!/bin/bash
 #SBATCH -o out_${cfg}
 #SBATCH -e out_${cfg}
-#SBATCH --job-name=nuc2pt_${cfg}
+#SBATCH --job-name=glue_npt_${cfg}
 #SBATCH -A project_465000563
-#SBATCH -t 24:00:00
+#SBATCH -t 00:10:00
 #SBATCH -p ju-standard-g
 #SBATCH -N 1 -n8 --gpus-per-task=1 --gpu-bind=none
 
@@ -61,11 +60,12 @@ zeta=0
 for T in 0
 do
 
-for pz in 0 1 2 
+for pz in 1
 do
 
-${here}/npt_local.sh \$T 0 0 \$pz $cfg 0.00 
-${here}/npt_local.sh \$T 0 1 \$pz $cfg 0.00 
+#                 t_src px py pz cfg_num phase
+${here}/npt_gluon.sh \$T 0 0 \$pz $cfg 0.00 
+${here}/npt_gluon.sh \$T 0 1 \$pz $cfg 0.00 
 
 done
 done
