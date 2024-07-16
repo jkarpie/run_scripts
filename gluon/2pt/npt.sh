@@ -3,23 +3,20 @@
 ExeDir=`pwd`
 # source /home1/06377/tg856768/builds/xsede/frontera/scalar_had-node-libs/env_frontera_scalar.sh
 
-chromaform="$CFS/hadron/chromaform-perlmutter/"
-. $chromaform/env.sh
-
 
 #INPUTS
-#TOFFSET MOMX MOMY MOMZ CFG PHASEZ stream
+#TOFFSET MOMX MOMY MOMZ CFG PHASEZ STREAM
 
+stream=$7
 #################
 # GLOBAL PARAMS
 #################
-stream=$7
 export ENSEM=cl21_32_64_b6p3_m0p2350_m0p2050
 export BETA=b6p3
 #PROJ IS LOCATION OF INPUT DATA
-export PROJ=/pscratch/sd/j/jkarpie/${ENSEM}_extension/${ENSEM}-$stream
+export PROJ=/qcd/cache/isoClover/${ENSEM}_extension/${ENSEM}-${stream}/
 #Location of chroma_python
-PYDIR=/global/homes/j/jkarpie/run_scripts/chroma_python
+PYDIR=/qcd/work/JLabLQCD/jkarpie/run_scripts_24s/chroma_python
 TSIZE=64
 NVEC=64
 #-------------------------------------------------------------------
@@ -45,14 +42,13 @@ export PHASEDIR=d001_${PHASE}
 MOMX=$2; MOMY=$3; MOMZ=$4
 MOM="${MOMX}.${MOMY}.${MOMZ}"
 
-conjMomX=`echo "-1*$MOMX" | bc`
-conjMomY=`echo "-1*$MOMY" | bc`
-conjMomZ=`echo "-1*$MOMZ" | bc`
-CONJMOM="${conjMomX}.${conjMomY}.${conjMomZ}"
 
-momxMod=`echo "sqrt($MOMX*$MOMX)" | bc `
-momyMod=`echo "sqrt($MOMY*$MOMY)" | bc `
-momzMod=`echo "sqrt($MOMZ*$MOMZ)" | bc `
+#momxMod=`echo "sqrt($MOMX*$MOMX)" | bc `
+#momyMod=`echo "sqrt($MOMY*$MOMY)" | bc `
+#momzMod=`echo "sqrt($MOMZ*$MOMZ)" | bc `
+momxMod=${MOMX#-}
+momyMod=${MOMY#-}
+momzMod=${MOMZ#-}
 MODMOM="${momxMod}.${momyMod}.${momzMod}"
 export momLabel=`echo $MOM | awk -F'.' '{printf $1$2$3}'`
 #----------------------------------------------------------------
@@ -63,6 +59,21 @@ export momLabel=`echo $MOM | awk -F'.' '{printf $1$2$3}'`
 ################################################
 #T_INI=`/home1/06377/tg856768/RUNS/set_tsrc.pl $CFG $TSIZE | awk '{printf $6"\n"}'`
 # I DISLIKE THIS RANDOM NUMBER AND IM NOT USING IT
+
+# Find t_origin
+T_INI="$( perl -e "
+   srand($CFG);
+
+   # Call a few to clear out junk
+
+   foreach \$i (1 .. 20)
+   {
+     rand(1.0);
+   }
+   \$t_origin = int(rand($TSIZE));
+   print \"\$t_origin\\n\"
+" )"
+
 T_INI=0
 T_ORIGIN=$(( ( $T_INI + $TOFFSET ) % $TSIZE ))
 #-----------------------------------------------------------------------------------
@@ -100,8 +111,8 @@ echo "Little group = $LG"
 ####################################################
 list_dir=$PYDIR/nuc_op_lists/colin_nuc_lists/
 if [ $LG == G1g ]; then
-    #nucOps=${list_dir}/nucleon.G1g.rest.local.list
-    nucOps=${list_dir}/nucleon.G1g.rest.list
+    nucOps=${list_dir}/nucleon.G1g.rest.local.list
+    #nucOps=${list_dir}/nucleon.G1g.rest.list
 elif [ $LG == D4 ]; then
     nucOps=${list_dir}/nucleon.D4E1-H1o2-n00.inflight.list
 elif [ $LG == D2 ]; then
@@ -125,27 +136,28 @@ fi
 # I/Os
 ########################
 #### ORIGINAL CFG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050_cfg_1000.lime
-#CFGPREF_CHR="/work2/06377/tg856768/frontera/isoClover/${BETA}/${ENSEM}/cfgs/${ENSEM}_cfg"
 #### MY CFG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_cfg_11000.lime
-CFGPREF_CHR="${PROJ}/cfgs/${ENSEM}-${stream}_cfg"
+CFGPREF_CHR="${PROJ}/cfgs/${ENSEM}_cfg"
 
 #### ORIGINAL EIG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050.3d.eigs.mod4350
 #CVEC=${PROJ}/eigs_mod/${ENSEM}.3d.eigs
 #### MY EIG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_eigen_z0_light.11000.eig
-CVEC="${PROJ}/eig/${ENSEM}-${stream}_eigen_z0_light"
+CVEC="${PROJ}/eigs_mod/${ENSEM}-${stream}_eigen_z0_light.${CFG}.eig"
 
 # run_dir needs to be changed to tell it where to put log files, xmls, and submission files
-run_dir="/pscratch/sd/j/jkarpie/redstar_run/"
-LOG=''; OUT=''
+run_dir="/qcd/volatile/JLabLQCD/jkarpie/redstar_run/"
+LOG=''; OUT='' ; XML=''
 if [ $PHASE == '0.00' ]; then
     #### ORIGINAL PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050.prop.n192.light.t0_0.sdb1020
-    #PERAM=/work2/06377/tg856768/frontera/isoClover/${BETA}/${ENSEM}/prop_db/${ENSEM}.prop.n${NVEC}.light.t0_${TOFFSET}
+    #PERAM=${PROJ}/prop_db/${ENSEM}.prop.n${NVEC}.light.t0_${TOFFSET}
     #### MY PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_z2_light_peram.11000.T60.peram
-    PERAM=${PROJ}/peram/${CFG}/${ENSEM}-${stream}_z0_light_peram
-    DUMP=/tmp/${USER}/nuc_runs/${ENSEM}/2pt/unphased/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
-    LOG=${run_dir}/${ENSEM}/${ENSEM}-${stream}/out_z0
+    PERAM=${PROJ}/peram/${CFG}/${ENSEM}-${stream}_peram_z0_light.${CFG}.T${TOFFSET}.peram
+    DUMP=${run_dir}/${ENSEM}/2pt/unphased/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
+    LOG=${run_dir}/$ENSEM/${ENSEM}-${stream}/out
+    XML=${run_dir}/$ENSEM/${ENSEM}-${stream}/xml
 
-    BOP=${DUMP}/run${CFG}/${ENSEM}.n${NVEC}.t0_${TOFFSET}.NtFwd_${NT_FWD}.baryon.colorvec
+
+    BOP=/qcd/volatile/JLabLQCD/jkarpie/baryon_ops/${ENSEM}_extension/${ENSEM}-${stream}/dbs/$CFG/${ENSEM}-${stream}.n${NVEC}.t0_0.NtFwd_64.baryon.colorvec
     OUT=${PROJ}/2ptcorrs/unphased
 else
     ## JK DOESN'T KNOW WHAT THIS WAS ABOUT
@@ -156,12 +168,12 @@ else
     #### ORIGINAL PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050.prop.n192.light.t0_0.sdb1020
     #PERAM=${PROJ}/phased/prop_db/d001_${PHASE}/${ENSEM}.phased_${PHASE}.prop.n${NVECTMP}.light.t0_${TOFFSET}
     #### MY PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_z2_light_peram.11000.T60.peram
-    PERAM=${PROJ}/peram/${CFG}/${ENSEM}-${stream}_z${PHASE}_light_peram
-    DUMP=/tmp/${USER}/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
-    LOG=/scratch3/06377/tg856768/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}
-    LOG=${run_dir}/${ENSEM}/${ENSEM}-${stream}/out_z$PHASE
+    PERAM=${PROJ}/peram/${CFG}/${ENSEM}-${stream}_peram_z${PHASE}_light.${CFG}.T${TOFFSET}.peram
+    DUMP=/${run_dir}/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
+    LOG=${run_dir}/$ENSEM/${ENSEM}-${stream}/out
+    XML=${run_dir}/$ENSEM/${ENSEM}-${stream}/xml
 
-    BOP=${DUMP}/run${CFG}/${ENSEM}.n${NVEC}.phased_${PHASE}.t0_${TOFFSET}.NtFwd_${NT_FWD}.baryon.colorvec
+    BOP=/qcd/volatile/JLabLQCD/jkarpie/baryon_ops/${ENSEM}_extension/${ENSEM}-${stream}/dbs/$CFG/${ENSEM}-${stream}.n${NVEC}.t0_0.NtFwd_64.baryon.colorvec
     OUT=${PROJ}/2ptcorrs/phased/${PHASEDIR}
 fi
 echo "DUMPBASE = ${DUMP}"
@@ -176,7 +188,7 @@ mkdir -p $OUT $LOG $DUMP
 # mkdir -p $OUT $DUMP
 
 # Final Correlator
-DB=${OUT}/${ENSEM}.nuc_${OPDISPS}.row1.p${MOMX}${MOMY}${MOMZ}.n${NVEC}.t0_${TOFFSET}.tcorr_${TCORR}
+DB=${OUT}/${ENSEM}.nuc_${OPDISPS}.p${MOMX}${MOMY}${MOMZ}.n${NVEC}.t0_${TOFFSET}.tcorr_${TCORR}
 #----------------------------------------------------------------------------------------------------
 
 
@@ -186,81 +198,37 @@ DB=${OUT}/${ENSEM}.nuc_${OPDISPS}.row1.p${MOMX}${MOMY}${MOMZ}.n${NVEC}.t0_${TOFF
 ########################
 echo "Doing CFG = $CFG"
 # Remove old run dirs; make anew and bump to them
-rm -rf ${LOG}/run$CFG
-mkdir -p ${LOG}/run$CFG
-# pushd ${LOG}/run$CFG
+rm -rf ${LOG}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
+mkdir -p ${LOG}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
+ pushd ${LOG}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
 
 rm ${DB}.sdb$CFG
-rm -rf ${DUMP}/run$CFG
-mkdir -p ${DUMP}/run$CFG
-pushd ${DUMP}/run$CFG
-
-
-# Pull all the needed input from /scratch to /tmp
-rsync -L ${PERAM}.${CFG}.T${TOFFSET}.peram ${DUMP}/run${CFG}/
-rsync -L ${CVEC}.${CFG}.eig ${DUMP}/run${CFG}/
-# Now modify the prefixes to be passed
-CVEC=${DUMP}/run${CFG}/${ENSEM}-${stream}_eigen_z0_light
-if [ $PHASE == '0.00' ]; then
-    PERAM=${DUMP}/run${CFG}/${ENSEM}-${stream}_z0_light_peram
-else
-    PERAM=${DUMP}/run${CFG}/${ENSEM}-${stream}_z${PHASE}_light_peram
-fi
-#--------------------------------------------------------------------------------------------------
-
+rm -rf ${DUMP}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
+mkdir -p ${DUMP}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
+#pushd ${DUMP}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
 
 
 
 
 ################################################
-################################################
-# Make the elementals on the fly!
-# Pass a single <momx>.<momy>.<momz> combo
-# conjugate momentum made as well!
-################################################
-################################################
-XMLI=baryon_elem${STREAM}.${OPDISPS}.n${NVEC}.phase_${PHASE}.t0_${TOFFSET}.NtFwd_${NT_FWD}.ini.xml$CFG
-XMLO=`echo $XMLI | sed -e 's/ini/out/'`
-mkdir -p bop_xmls
 
-$PYDIR/baryon_elem_jknames.py -c $CFG -e $ENSEM -g $CFGPREF_CHR -n $NVEC \
-    -t $T_ORIGIN -T $NT_FWD -v $CVEC -m ${MOM}/${CONJMOM} -b ${BOP}.sdb$CFG -d $OPDISPS \
-    --gaugeSmear --smearFact=$SFACT --smearNum=$SNUM \
-    --superb --phase "0.0 0.0 $PHASE" > bop_xmls/$XMLI
-# --haromOptimize > bop_xmls/$XMLI
+# Remove old run dirs; make anew and bump to them
+rm -rf ${XML}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
+mkdir -p ${XML}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
 
-
-export OMP_NUM_THREADS=1
-
-CHROMA="${chromaform}/install-jk-cpu/chroma-mgproto-qphix-qdpxx-double-nd4-avx2-superbblas-cpu/bin/chroma"
-CHROMA_EX="-by 4 -bz 4 -pxy 0 -pxyz 0 -c $OMP_NUM_THREADS -sy 1 -sz 1 -minct 1"
-GEOM="-geom 2 4 4 4"
-
-srun $CHROMA $CHROMA_EX $GEOM -i bop_xmls/$XMLI >& ${LOG}/run${CFG}/BOP${CFG}
-
-#---------------------------------------------------------------------------------------------------
-
-#### I don't know what these do but I don't think it's for perlmutter
-####export NPT_BATCH_SIZE=1
-####export KMP_AFFINITY=scatter,granularity=fine
-
-echo "Setting up the input files for redstar"    
-#########################
-# XMLS FOR THIS OPERATOR
-#########################
-${PYDIR}/redstar_2pt_jknames.py -c $CFG -e $ENSEM -i $nucOps -f $nucOps \
-    -p $MOM -r $TCORR -t $T_ORIGIN \
-    -s 0 -n "smeared_hadron_node" -u "unsmeared_hadron_node" -o $DB \
-    -y "baryon_2pt" -g "." -x 0 --no_writing_nodes \
-    --nvecs=$NVEC --prop_db_prefix=$PERAM -b $BOP -v 12 >> nucleon_control.xml$CFG
+echo PERAM $PERAM
+echo BOP $BOP
+/qcd/work/JLabLQCD/jkarpie/run_scripts_24s/gluon/2pt/make_redstar_2pt_xml.sh \
+	${XML}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG/nucleon_control_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.xml$CFG \
+	$MOMX $MOMY $MOMZ $MOMX $MOMY $MOMZ \
+	$CFG $TOFFSET \
+	$PERAM $BOP ${DB}.sdb$CFG
 
 # Need to fixx placement of thrreads on cores
 echo "Running redstar at " `date`
 
-source ${chromaform}/env.sh
-
-/global/homes/j/jkarpie/run_scripts/gluon/run_redstar_int.2pt.no-nodes.sh \
-    nucleon_control.xml$CFG >& ${LOG}/run${CFG}/DB$CFG
+/qcd/work/JLabLQCD/jkarpie/run_scripts_24s/gluon/2pt/run_redstar_int.2pt.no-nodes.sh \
+    ${XML}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG/nucleon_control_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.xml$CFG >& ${LOG}/run_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.${CFG}/out.redstar_T${TOFFSET}_p${MOMX}.${MOMY}.${MOMZ}.$CFG
 
 echo "Ending redstar script at time= " `date`
 
