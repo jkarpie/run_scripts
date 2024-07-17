@@ -1,13 +1,19 @@
 #!/bin/bash
 
 xml_name=$1
-pz_max=$2
-phase=$3
-eig_file=$4
-cfg_file=$5
-output_file=$6
+px=$2
+py=$3
+pz=$4
+phase=$5
+eig_file=$6
+cfg_file=$7
+output_file=$8
 
 rm $xml_name
+
+conj_px=` echo -1*$px | bc `
+conj_py=` echo -1*$py | bc `
+conj_pz=` echo -1*$pz | bc `
 
 cat << EOF >> $xml_name
 <?xml version="1.0"?>
@@ -23,24 +29,8 @@ cat << EOF >> $xml_name
           <Nt_forward>64</Nt_forward>
           <phase>0.0 0.0 ${phase}</phase>
           <mom_list>
-	<elem>0 0 0</elem>
-	<elem>0 1 0</elem>
-	<elem>0 -1 0</elem>
-EOF
-
-for pz in `seq 1 ${pz_max}`
-do
-cat << EOF >> $xml_name
-	<elem>0 0 ${pz}</elem>
-	<elem>0 1 ${pz}</elem>
-	<elem>0 0 -${pz}</elem>
-	<elem>0 -1 -${pz}</elem>
-	<elem>0 1 -${pz}</elem>
-	<elem>0 -1 ${pz}</elem>
-EOF
-done
-
-cat << EOF >> $xml_name
+	<elem>$px $py $pz</elem>
+	<elem>$conj_px $conj_py $conj_pz</elem>
           </mom_list>
           <decay_dir>3</decay_dir>
           <use_derivP>true</use_derivP>

@@ -2,6 +2,9 @@
 cfg=$1
 stream=$2
 
+px=$3 
+py=$4
+pz=$5
 
 here=`pwd`
 
@@ -18,7 +21,6 @@ name_stem="redstar_${cfg}"
 filename=${scratch_dir}/sub/${name_stem}.sh
 
 
-pz_max=3
 
 pushd ${scratch_dir}/out
 
@@ -46,13 +48,13 @@ export I_MPI_OFI_PROVIDER_DUMP=1
 export I_MPI_OFI_PROVIDER=psm3
 
 echo "Bopping"
-${here}/run_bop.sh ${pz_max} ${cfg} 0.00 $stream 
+${here}/run_bop.sh $px $py $pz ${cfg} 0.00 $stream 
 echo "Bopped"
 
 #for T in 0  
 for T in 0 8 16 24 32 40 48 56 
 do
-${here}/run_npt.sh \$T ${pz_max} $cfg 0.00 $stream &
+${here}/run_npt.sh \$T $px $py $pz $cfg 0.00 $stream &
 done
 wait
 

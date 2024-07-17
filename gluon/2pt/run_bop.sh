@@ -1,9 +1,11 @@
 #!/bin/bash
 
-pz_max=$1
-cfg=$2
-phase=$3
-stream=$4
+px=$1
+py=$2
+pz=$3
+cfg=$5
+phase=$6
+stream=$7
 
 echo "Bopping along"
 source /etc/profile.d/modules.sh
@@ -54,7 +56,7 @@ export OPENBLAS_NUM_THREADS=1
 
 /qcd/work/JLabLQCD/jkarpie/run_scripts_24s/gluon/2pt/make_bop_xml.sh \
 	${scratch_dir}/xml/${name_stem}.ini.xml \
-	${pz_max} \
+	$px $py $pz \
 	${phase} \
 	${eig_file} \
 	${cfg_file} \

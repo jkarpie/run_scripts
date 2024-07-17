@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ExeDir=`pwd`
+here="/qcd/work/JLabLQCD/jkarpie/run_scripts_24s/gluon/2pt"
 # source /home1/06377/tg856768/builds/xsede/frontera/scalar_had-node-libs/env_frontera_scalar.sh
 
 
