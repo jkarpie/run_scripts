@@ -3,9 +3,9 @@
 px=$1
 py=$2
 pz=$3
-cfg=$5
-phase=$6
-stream=$7
+cfg=$4
+phase=$5
+stream=$6
 
 echo "Bopping along"
 source /etc/profile.d/modules.sh
