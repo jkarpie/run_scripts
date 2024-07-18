@@ -157,7 +157,7 @@ if [ $PHASE == '0.00' ]; then
     XML=${run_dir}/$ENSEM/${ENSEM}-${stream}/xml
 
 
-    BOP=/scratch/JLabLQCD/jkarpie/baryon_ops/${ENSEM}_extension/${ENSEM}-${stream}/dbs/$CFG/${ENSEM}-${stream}.n${NVEC}.t0_0.NtFwd_64.baryon.colorvec
+    BOP=/scratch/JLabLQCD/jkarpie/baryon_ops/${ENSEM}_extension/${ENSEM}-${stream}/dbs/$CFG/${ENSEM}-${stream}.n${NVEC}.p${px}${py}${pz}.t0_0.NtFwd_64.baryon.colorvec
     OUT=${PROJ}/2ptcorrs/unphased
 else
     ## JK DOESN'T KNOW WHAT THIS WAS ABOUT
@@ -173,7 +173,7 @@ else
     LOG=${run_dir}/$ENSEM/${ENSEM}-${stream}/out
     XML=${run_dir}/$ENSEM/${ENSEM}-${stream}/xml
 
-    BOP=/scratch/JLabLQCD/jkarpie/baryon_ops/${ENSEM}_extension/${ENSEM}-${stream}/dbs/$CFG/${ENSEM}-${stream}.n${NVEC}.t0_0.NtFwd_64.baryon.colorvec
+    BOP=/scratch/JLabLQCD/jkarpie/baryon_ops/${ENSEM}_extension/${ENSEM}-${stream}/dbs/$CFG/${ENSEM}-${stream}.n${NVEC}.p${px}${py}${pz}.t0_0.NtFwd_64.baryon.colorvec
     OUT=${PROJ}/2ptcorrs/phased/${PHASEDIR}
 fi
 echo "DUMPBASE = ${DUMP}"

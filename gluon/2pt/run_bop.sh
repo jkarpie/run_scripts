@@ -38,7 +38,7 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/w/22/JLabLQCD/jkarpie/chromaform_24s
 
 
 
-name_stem="baryon_${cfg}"
+name_stem="baryon_${cfg}_p${px}.${py}.${pz}"
 
 #source ${chromaform}/env.sh
 
@@ -60,7 +60,7 @@ export OPENBLAS_NUM_THREADS=1
 	${phase} \
 	${eig_file} \
 	${cfg_file} \
-	${output_dir}/dbs/${cfg}/${ENSEM}-$stream.n64.t0_0.NtFwd_64.baryon.colorvec
+	${output_dir}/dbs/${cfg}/${ENSEM}-$stream.n64.p${px}${py}${pz}.t0_0.NtFwd_64.baryon.colorvec
 
 mpirun -np 8 \
 	--map-by ppr:8:node:PE=${OMP_NUM_THREADS}  \

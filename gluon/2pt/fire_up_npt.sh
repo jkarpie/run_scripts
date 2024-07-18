@@ -51,7 +51,6 @@ echo "Bopping"
 ${here}/run_bop.sh $px $py $pz ${cfg} 0.00 $stream 
 echo "Bopped"
 
-#for T in 0  
 for T in 0 8 16 24 32 40 48 56 
 do
 ${here}/run_npt.sh \$T $px $py $pz $cfg 0.00 $stream &
