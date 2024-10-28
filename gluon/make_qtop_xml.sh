@@ -26,8 +26,8 @@ cat <<EOF > ${filename}
         <Frequency>1</Frequency>
         <Param>
           <version>1</version>
-          <nstep>100</nstep>
-          <wtime>3.5</wtime>
+          <nstep>300</nstep>
+          <wtime>15.0</wtime>
           <t_dir>3</t_dir>
         </Param>
         <NamedObject>

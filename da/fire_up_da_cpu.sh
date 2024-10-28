@@ -3,7 +3,7 @@ cfg=$1
 
 
 
-scratch_dir=/pscratch/sd/j/jkarpie/da/E5/
+scratch_dir=/pscratch/sd/j/jkarpie/da-cpu/E5/
 mkdir -p ${scratch_dir}/sub
 mkdir -p ${scratch_dir}/xml
 mkdir -p ${scratch_dir}/out
@@ -49,7 +49,7 @@ rm /global/cfs/cdirs/hadron/CLS_Nf2/E5/mes_2pt_test_cpu/${cfg}/*
 
 /global/homes/j/jkarpie/run_scripts/chroma_python/pseudo_da_cls_bundle_cpu.py \
      -g "/global/cfs/cdirs/hadron/CLS_Nf2/E5/cfgs/64x32x32x32b5.30k0.13625c1.90952id9n" \
-     -k 8 -c $cfg -r 4.0 -p 8 \
+     -k 8 -c $cfg -r 5.0 -p 8 \
      -s "/global/cfs/cdirs/hadron/CLS_Nf2/E5/mes_2pt/" \
      -w /global/homes/j/jkarpie/run_scripts/chroma_python/wfs/ > ${scratch_dir}/xml/${name_stem}.ini.xml
 
