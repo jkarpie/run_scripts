@@ -1,13 +1,13 @@
 #!/bin/bash
 
-filename=$1
-cfg_file=$2
-eig_file=$3
+num_vecs=$1
+filename=$2
+cfg_file=$3
+eig_file=$4
 
 ssize=32
 tsize=64
 
-num_vecs=96
 smear_fact=0.08
 smear_num=10
 

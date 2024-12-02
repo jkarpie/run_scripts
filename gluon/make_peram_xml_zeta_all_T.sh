@@ -1,16 +1,17 @@
 #!/bin/bash
 
 filename=$1
-cfg_file=$2
-eig_file=$3
-prop_file_stem=$4
-NT=$5
-zeta=$6
+cfg_num=$2
+cfg_file=$3
+eig_file=$4
+prop_file_stem=$5
+NT=$6
+zeta=$7
 
 ssize=32
 tsize=64
 
-num_vecs=96
+num_vecs=$8
 smear_fact=0.08
 smear_num=10
 
@@ -22,14 +23,14 @@ cat > ${filename} << EOF
 EOF
 for T in `seq 0 1 ${NT}`
 do
-prop_file=${prop_file_stem}.T${T}.peram
+prop_file=${prop_file_stem}.t0_${T}.sdb${cfg}
 cat >> ${filename} <<EOF
     <elem>
       <Name>PROP_AND_MATELEM_DISTILLATION_SUPERB</Name>
       <Frequency>1</Frequency>
       <Param>
         <Contractions>
-          <mass_label>U-0.2350</mass_label>
+          <mass_label>U-0.2390</mass_label>
           <num_vecs>$num_vecs</num_vecs>
           <t_sources>$T</t_sources>
           <Nt_forward>64</Nt_forward>
@@ -46,7 +47,7 @@ cat >> ${filename} <<EOF
           <numRetries>1</numRetries>
           <FermionAction>
             <FermAct>CLOVER</FermAct>
-            <Mass>-0.2350</Mass>
+            <Mass>-0.2390</Mass>
             <clovCoeff>1.20536588031793</clovCoeff>
             <AnisoParam>
               <anisoP>false</anisoP>
@@ -68,7 +69,7 @@ cat >> ${filename} <<EOF
            <InvertParam>
                <invType>QUDA_MULTIGRID_CLOVER_INVERTER</invType>
                <CloverParams>
-                 <Mass>-0.2350</Mass>
+                 <Mass>-0.2390</Mass>
                  <clovCoeff>1.20536588031793</clovCoeff>
                  <AnisoParam>
                    <anisoP>false</anisoP>
