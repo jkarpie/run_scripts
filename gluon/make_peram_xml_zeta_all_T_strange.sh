@@ -12,7 +12,7 @@ ssize=32
 tsize=64
 
 num_vecs=$8
-smear_fact=0.08
+smear_fact=0.1
 smear_num=10
 
 cat > ${filename} << EOF
