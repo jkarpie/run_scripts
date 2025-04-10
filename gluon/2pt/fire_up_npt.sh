@@ -6,7 +6,7 @@ stream=$3
 
 here=`pwd`
 
-ensemb="cl21_32_64_b6p3_m0p2350_m0p2050"
+ensemb="cl21_32_64_b6p3_m0p2390_m0p2050"
 
 scratch=/pscratch/sd/j/jkarpie
 scratch_dir=${scratch}/redstar_run/$ensemb/${ensemb}-${stream}/

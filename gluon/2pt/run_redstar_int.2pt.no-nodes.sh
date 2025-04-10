@@ -7,8 +7,10 @@ export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 export MKL_NUM_THREADS=1
 
-chromaform="$CFS/hadron/chromaform-perlmutter-cpu"
+chromaform="/global/cfs/projectdirs/hadron/chromaform-perlmutter"
+
 . $chromaform/env.sh
+. $chromaform/env_extra.sh
 
 
 if [ $# -ne 1 ]; then
@@ -25,7 +27,7 @@ fi
 
 /bin/rm -f hadron_node.xml
 
-exe_red=${chromaform}/install/redstar/bin/
+exe_red=${chromaform}/install/redstar-pdf-colorvec-pdf-hadron-cuda-adat-pdf-superbblas/bin/
 
 $exe_red/redstar_corr_graph $f out.xml
 if [ $status != 0 ]; then

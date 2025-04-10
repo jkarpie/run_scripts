@@ -3,8 +3,12 @@
 ExeDir=`pwd`
 # source /home1/06377/tg856768/builds/xsede/frontera/scalar_had-node-libs/env_frontera_scalar.sh
 
-chromaform="$CFS/hadron/chromaform-perlmutter/"
+chromaform="/pscratch/sd/e/eromero/chromaform-gpu"
+chroma="$chromaform/install/chroma-restructure-quda-qdp-jit-double-nd4-cmake-superbblas-cuda/bin/chroma"
+
+
 . $chromaform/env.sh
+. $chromaform/env_extra.sh
 
 
 #INPUTS
@@ -13,15 +17,14 @@ chromaform="$CFS/hadron/chromaform-perlmutter/"
 #################
 # GLOBAL PARAMS
 #################
-stream=$7
-export ENSEM=cl21_32_64_b6p3_m0p2350_m0p2050
+export ENSEM=cl21_32_64_b6p3_m0p2390_m0p2050
 export BETA=b6p3
 #PROJ IS LOCATION OF INPUT DATA
-export PROJ=/pscratch/sd/j/jkarpie/${ENSEM}_extension/${ENSEM}-$stream
+export PROJ=/pscratch/sd/j/jkarpie/${ENSEM}/
 #Location of chroma_python
 PYDIR=/global/homes/j/jkarpie/run_scripts/chroma_python
 TSIZE=64
-NVEC=64
+NVEC=192
 #-------------------------------------------------------------------
 
 #################################
@@ -38,7 +41,7 @@ SNUM=10    # iterations of stout smearing
 ##################################
 CFG=$5
 TOFFSET=$1
-TCORR=16; NT_FWD=$TCORR
+TCORR=32; NT_FWD=$TCORR
 export PHASE=$6
 export PHASEDIR=d001_${PHASE}
 
@@ -127,21 +130,22 @@ fi
 #### ORIGINAL CFG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050_cfg_1000.lime
 #CFGPREF_CHR="/work2/06377/tg856768/frontera/isoClover/${BETA}/${ENSEM}/cfgs/${ENSEM}_cfg"
 #### MY CFG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_cfg_11000.lime
-CFGPREF_CHR="${PROJ}/cfgs/${ENSEM}-${stream}_cfg"
+CFGPREF_CHR="${PROJ}/cfgs/${ENSEM}_cfg"
 
 #### ORIGINAL EIG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050.3d.eigs.mod4350
 #CVEC=${PROJ}/eigs_mod/${ENSEM}.3d.eigs
 #### MY EIG FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_eigen_z0_light.11000.eig
-CVEC="${PROJ}/eig/${ENSEM}-${stream}_eigen_z0_light"
+CVEC="${PROJ}/eigs_mod/${ENSEM}.3d.eigs192"
 
 # run_dir needs to be changed to tell it where to put log files, xmls, and submission files
 run_dir="/pscratch/sd/j/jkarpie/redstar_run/"
+scratch=/pscratch/sd/j/jkarpie
 LOG=''; OUT=''
 if [ $PHASE == '0.00' ]; then
     #### ORIGINAL PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050.prop.n192.light.t0_0.sdb1020
     #PERAM=/work2/06377/tg856768/frontera/isoClover/${BETA}/${ENSEM}/prop_db/${ENSEM}.prop.n${NVEC}.light.t0_${TOFFSET}
+    PERAM=${scratch}/${ENSEM}/prop_db/${ENSEM}.prop.n${NVEC}.light.z0
     #### MY PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_z2_light_peram.11000.T60.peram
-    PERAM=${PROJ}/peram/${CFG}/${ENSEM}-${stream}_z0_light_peram
     DUMP=/tmp/${USER}/nuc_runs/${ENSEM}/2pt/unphased/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
     LOG=${run_dir}/${ENSEM}/${ENSEM}-${stream}/out_z0
 
@@ -156,7 +160,7 @@ else
     #### ORIGINAL PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050.prop.n192.light.t0_0.sdb1020
     #PERAM=${PROJ}/phased/prop_db/d001_${PHASE}/${ENSEM}.phased_${PHASE}.prop.n${NVECTMP}.light.t0_${TOFFSET}
     #### MY PERAM FILES FULL NAME IS LIKE cl21_32_64_b6p3_m0p2350_m0p2050-10700_z2_light_peram.11000.T60.peram
-    PERAM=${PROJ}/peram/${CFG}/${ENSEM}-${stream}_z${PHASE}_light_peram
+    PERAM=${scratch}/${ENSEM}/prop_db/${ENSEM}.prop.n${NVEC}.light.z$PHASE
     DUMP=/tmp/${USER}/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}/t0_${TOFFSET}/momXYZ.${MOMX}.${MOMY}.${MOMZ}
     LOG=/scratch3/06377/tg856768/nuc_runs/${ENSEM}/2pt/phased/${PHASEDIR}
     LOG=${run_dir}/${ENSEM}/${ENSEM}-${stream}/out_z$PHASE
@@ -195,23 +199,6 @@ rm -rf ${DUMP}/run$CFG
 mkdir -p ${DUMP}/run$CFG
 pushd ${DUMP}/run$CFG
 
-
-# Pull all the needed input from /scratch to /tmp
-rsync -L ${PERAM}.${CFG}.T${TOFFSET}.peram ${DUMP}/run${CFG}/
-rsync -L ${CVEC}.${CFG}.eig ${DUMP}/run${CFG}/
-# Now modify the prefixes to be passed
-CVEC=${DUMP}/run${CFG}/${ENSEM}-${stream}_eigen_z0_light
-if [ $PHASE == '0.00' ]; then
-    PERAM=${DUMP}/run${CFG}/${ENSEM}-${stream}_z0_light_peram
-else
-    PERAM=${DUMP}/run${CFG}/${ENSEM}-${stream}_z${PHASE}_light_peram
-fi
-#--------------------------------------------------------------------------------------------------
-
-
-
-
-
 ################################################
 ################################################
 # Make the elementals on the fly!
@@ -232,11 +219,11 @@ $PYDIR/baryon_elem_jknames.py -c $CFG -e $ENSEM -g $CFGPREF_CHR -n $NVEC \
 
 export OMP_NUM_THREADS=1
 
-CHROMA="${chromaform}/install-jk-cpu/chroma-mgproto-qphix-qdpxx-double-nd4-avx2-superbblas-cpu/bin/chroma"
+
 CHROMA_EX="-by 4 -bz 4 -pxy 0 -pxyz 0 -c $OMP_NUM_THREADS -sy 1 -sz 1 -minct 1"
 GEOM="-geom 2 4 4 4"
 
-srun $CHROMA $CHROMA_EX $GEOM -i bop_xmls/$XMLI >& ${LOG}/run${CFG}/BOP${CFG}
+srun $chroma $CHROMA_EX $GEOM -i bop_xmls/$XMLI >& ${LOG}/run${CFG}/BOP${CFG}
 
 #---------------------------------------------------------------------------------------------------
 
@@ -259,7 +246,7 @@ echo "Running redstar at " `date`
 
 source ${chromaform}/env.sh
 
-/global/homes/j/jkarpie/run_scripts/gluon/run_redstar_int.2pt.no-nodes.sh \
+/global/homes/j/jkarpie/run_scripts/gluon/2pt/run_redstar_int.2pt.no-nodes.sh \
     nucleon_control.xml$CFG >& ${LOG}/run${CFG}/DB$CFG
 
 echo "Ending redstar script at time= " `date`
