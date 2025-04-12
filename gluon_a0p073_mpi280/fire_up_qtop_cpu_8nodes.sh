@@ -49,7 +49,7 @@ source $chromaform/env_extra.sh
 module load python
 
 
-/global/homes/j/jkarpie/run_scripts/gluon/make_qtop_xml.sh ${scratch_dir}/xml/${name_stem}.ini.xml ${cfg_dir}/${ensemb}_cfg_${cfg}.lime ${cfg}
+/global/homes/j/jkarpie/run_scripts/gluon_a0p073_mpi280/make_qtop_xml.sh ${scratch_dir}/xml/${name_stem}.ini.xml ${cfg_dir}/${ensemb}_cfg_${cfg}.lime ${cfg}
 
 
 srun $chroma -i ${scratch_dir}/xml/${name_stem}.ini.xml -o ${scratch_dir}/xml/${name_stem}.out.xml ${CHROMA_EX} ${GEOM} 

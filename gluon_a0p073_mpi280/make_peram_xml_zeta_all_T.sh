@@ -8,11 +8,11 @@ prop_file_stem=$5
 NT=$6
 zeta=$7
 
-ssize=32
-tsize=64
+ssize=48
+tsize=128
 
 num_vecs=$8
-smear_fact=0.1
+smear_fact=0.08
 smear_num=10
 
 cat > ${filename} << EOF
@@ -30,10 +30,10 @@ cat >> ${filename} <<EOF
       <Frequency>1</Frequency>
       <Param>
         <Contractions>
-          <mass_label>S-0.2050</mass_label>
+          <mass_label>U-0.2070</mass_label>
           <num_vecs>$num_vecs</num_vecs>
           <t_sources>$T</t_sources>
-          <Nt_forward>64</Nt_forward>
+          <Nt_forward>$tsize</Nt_forward>
           <Nt_backward>0</Nt_backward>
           <decay_dir>3</decay_dir>
           <num_tries>-1</num_tries>
@@ -47,8 +47,8 @@ cat >> ${filename} <<EOF
           <numRetries>1</numRetries>
           <FermionAction>
             <FermAct>CLOVER</FermAct>
-            <Mass>-0.2050</Mass>
-            <clovCoeff>1.20536588031793</clovCoeff>
+            <Mass>-0.2070</Mass>
+            <clovCoeff>1.170082389372972</clovCoeff>
             <AnisoParam>
               <anisoP>false</anisoP>
               <t_dir>3</t_dir>
@@ -69,8 +69,8 @@ cat >> ${filename} <<EOF
            <InvertParam>
                <invType>QUDA_MULTIGRID_CLOVER_INVERTER</invType>
                <CloverParams>
-                 <Mass>-0.2050</Mass>
-                 <clovCoeff>1.20536588031793</clovCoeff>
+                 <Mass>-0.2070</Mass>
+                 <clovCoeff>1.170082389372972</clovCoeff>
                  <AnisoParam>
                    <anisoP>false</anisoP>
                    <t_dir>3</t_dir>

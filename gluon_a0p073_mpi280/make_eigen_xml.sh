@@ -5,10 +5,10 @@ filename=$2
 cfg_file=$3
 eig_file=$4
 
-ssize=32
-tsize=64
+ssize=48
+tsize=128
 
-smear_fact=0.1
+smear_fact=0.13
 smear_num=10
 
 cat <<EOF > ${filename}

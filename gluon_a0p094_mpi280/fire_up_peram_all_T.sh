@@ -55,7 +55,7 @@ name_stem="peram_bundle_${cfg}_z\${zeta}"
 peram_out=${scratch}/${ensemb}/prop_db/$cfg/${ensemb}.prop.n${Nevec}.light.z\${zeta}
 mkdir -p ${scratch}/${ensemb}/prop_db/
 
-/global/homes/j/jkarpie/run_scripts/gluon/make_peram_xml_zeta_all_T.sh \
+/global/homes/j/jkarpie/run_scripts/gluon_a0p094_mpi280/make_peram_xml_zeta_all_T.sh \
       ${scratch_dir}/xml/\${name_stem}.ini.xml \
       ${cfg} \
       ${data_dir}/cfgs/${ensemb}_cfg_${cfg}.lime \

@@ -56,7 +56,7 @@ cat <<EOF > ${filename}
       </elem>
   </InlineMeasurements>
 
-  <nrow>64 64 64 192</nrow>
+  <nrow>48 48 48 128</nrow>
 </Param>
 </chroma>
 EOF

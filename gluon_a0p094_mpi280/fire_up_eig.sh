@@ -48,7 +48,7 @@ source $chromaform/env_extra.sh
 module load python
 
 
-/global/homes/j/jkarpie/run_scripts/gluon/make_eigen_xml.sh ${Nevec} \
+/global/homes/j/jkarpie/run_scripts/gluon_a0p094_mpi280/make_eigen_xml.sh ${Nevec} \
       ${scratch_dir}/xml/${name_stem}_T${T}.ini.xml \
       ${data_dir}/cfgs/${ensemb}_cfg_${cfg}.lime \
       $eig_out

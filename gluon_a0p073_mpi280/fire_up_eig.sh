@@ -4,9 +4,9 @@ Nevec=192
 
 here=`pwd`
 
-ensemb="cl21_32_64_b6p3_m0p2390_m0p2050"
+ensemb="cl21_48_128_b6p5_m0p2070_m0p1750"
 
-data_dir="/global/cfs/projectdirs/hadron/b6p3/${ensemb}/"
+data_dir="/global/cfs/projectdirs/hadron/b6p5/${ensemb}/"
 mkdir -p ${data_dir}/eigs_mod/
 eig_out=${data_dir}/eigs_mod/${ensemb}.3d.eigs${Nevec}.mod${cfg} 
 scratch=/pscratch/sd/j/jkarpie
@@ -31,7 +31,7 @@ cat <<EOF > ${filename}
 #SBATCH --job-name=${cfg}_eig
 #SBATCH -A hadron_g
 #SBATCH -q regular
-#SBATCH -t 0:30:00
+#SBATCH -t 6:00:00
 #SBATCH -N 1
 #SBATCH -c 16
 #SBATCH --ntasks-per-node=4
@@ -48,7 +48,7 @@ source $chromaform/env_extra.sh
 module load python
 
 
-/global/homes/j/jkarpie/run_scripts/gluon/make_eigen_xml.sh ${Nevec} \
+/global/homes/j/jkarpie/run_scripts/gluon_a0p073_mpi280/make_eigen_xml.sh ${Nevec} \
       ${scratch_dir}/xml/${name_stem}_T${T}.ini.xml \
       ${data_dir}/cfgs/${ensemb}_cfg_${cfg}.lime \
       $eig_out

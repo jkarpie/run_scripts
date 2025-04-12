@@ -4,9 +4,9 @@ Nevec=$2
 
 
 
-ensemb="cl21_32_64_b6p3_m0p2390_m0p2050"
+ensemb="cl21_48_128_b6p5_m0p2070_m0p1750"
 
-data_dir="/global/cfs/projectdirs/hadron/b6p3/${ensemb}/"
+data_dir="/global/cfs/projectdirs/hadron/b6p5/${ensemb}/"
 
 scratch=/pscratch/sd/j/jkarpie
 scratch_dir=${scratch}/peram_run/$ensemb/
@@ -53,20 +53,20 @@ do
 
 eig_out=${data_dir}/eigs_mod/${ensemb}.3d.eigs${Nevec}.mod\${cfg}
 
-for zeta in 0 2 -2
+for zeta in 0 2 -2 4 -4
 do
 
 name_stem="peram_bundle_\${cfg}_z\${zeta}"
 peram_out=${scratch}/${ensemb}/prop_db/\${cfg}/${ensemb}.prop.n${Nevec}.strange.z\${zeta}
 mkdir -p ${scratch}/${ensemb}/prop_db/\${cfg}
 
-/global/homes/j/jkarpie/run_scripts/gluon/make_peram_xml_zeta_all_T_strange.sh \
+/global/homes/j/jkarpie/run_scripts/gluon_a0p073_mpi280/make_peram_xml_zeta_all_T_strange.sh \
       ${scratch_dir}/xml/\${name_stem}.ini.xml \
       \${cfg} \
       ${data_dir}/cfgs/${ensemb}_cfg_\${cfg}.lime \
       \$eig_out \
       \${peram_out} \
-      63 \
+      127 \
       \$zeta \
       $Nevec
 

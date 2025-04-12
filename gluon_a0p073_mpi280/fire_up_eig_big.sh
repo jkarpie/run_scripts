@@ -4,9 +4,9 @@ Nevec=192
 
 here=`pwd`
 
-ensemb="cl21_32_64_b6p3_m0p2390_m0p2050"
+ensemb="cl21_48_128_b6p5_m0p2070_m0p1750"
 
-data_dir="/global/cfs/projectdirs/hadron/b6p3/${ensemb}/"
+data_dir="/global/cfs/projectdirs/hadron/b6p5/${ensemb}/"
 mkdir -p ${data_dir}/eigs_mod/
 scratch=/pscratch/sd/j/jkarpie
 scratch_dir=${scratch}/eig_run/$ensemb/
@@ -22,7 +22,7 @@ filename=${scratch_dir}/sub/${name_stem}_${cfg_start}.sh
 chromaform="/pscratch/sd/e/eromero/chromaform-gpu"
 chroma="$chromaform/install/chroma-restructure-quda-qdp-jit-double-nd4-cmake-superbblas-cuda/bin/chroma"
 
-cfg_list={${cfg_start}..$((cfg_start+499))..10}
+cfg_list={${cfg_start}..$((cfg_start+249))..10}
 
 pushd ${scratch_dir}/out
 
@@ -32,8 +32,8 @@ cat <<EOF > ${filename}
 #SBATCH --job-name=${cfg_start}_eig
 #SBATCH -A hadron_g
 #SBATCH -q regular
-#SBATCH -t 0:30:00
-#SBATCH -N 100
+#SBATCH -t 06:00:00
+#SBATCH -N 25
 #SBATCH -c 16
 #SBATCH --ntasks-per-node=4
 #SBATCH -C gpu --gpus-per-task=1
@@ -52,7 +52,7 @@ for cfg in $cfg_list
 do
 eig_out=${data_dir}/eigs_mod/${ensemb}.3d.eigs${Nevec}.mod\${cfg} 
 name_stem=${name_stem}_\${cfg}
-/global/homes/j/jkarpie/run_scripts/gluon_a0p094_mpi280/make_eigen_xml.sh ${Nevec} \
+/global/homes/j/jkarpie/run_scripts/gluon_a0p073_mpi280/make_eigen_xml.sh ${Nevec} \
       ${scratch_dir}/xml/\${name_stem}.ini.xml \
       ${data_dir}/cfgs/${ensemb}_cfg_\${cfg}.lime \
       \$eig_out
@@ -66,7 +66,7 @@ fi
 module list
 
 
-srun -N1 -n4 -c16   $chroma -i ${scratch_dir}/xml/\${name_stem}.ini.xml -o ${scratch_dir}/xml/\${name_stem}_T${T}.out.xml  -pool-max-alignment 512 -pool-max-alloc 0 -geom 1 1 1 4 &
+srun  -N1 -n4 -c16  $chroma -i ${scratch_dir}/xml/\${name_stem}.ini.xml -o ${scratch_dir}/xml/\${name_stem}_T${T}.out.xml  -pool-max-alignment 512 -pool-max-alloc 0 -geom 1 1 1 4
 
 
 
@@ -77,8 +77,6 @@ wait
 ${here}/fire_up_peram_all_T_big.sh $cfg_start $Nevec
 ${here}/fire_up_peram_all_T_big_strange.sh $cfg_start $Nevec
 
-${here}/fire_up_peram_all_T_big.sh $((cfg_start+250)) $Nevec
-${here}/fire_up_peram_all_T_big_strange.sh $((cfg_start+250)) $Nevec
 EOF
 
 sbatch ${filename}

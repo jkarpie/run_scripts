@@ -4,9 +4,9 @@ Nevec=$2
 
 
 
-ensemb="cl21_32_64_b6p3_m0p2390_m0p2050"
+ensemb="cl21_48_128_b6p5_m0p2070_m0p1750"
 
-data_dir="/global/cfs/projectdirs/hadron/b6p3/${ensemb}/"
+data_dir="/global/cfs/projectdirs/hadron/b6p5/${ensemb}/"
 eig_out=${data_dir}/eigs_mod/${ensemb}.3d.eigs${Nevec}.mod${cfg}
 
 scratch=/pscratch/sd/j/jkarpie
@@ -32,7 +32,7 @@ cat <<EOF > ${filename}
 #SBATCH --job-name=${cfg}_prop
 #SBATCH -A hadron_g
 #SBATCH -q regular
-#SBATCH -t 6:00:00
+#SBATCH -t 12:00:00
 #SBATCH -N 6
 #SBATCH -c 16
 #SBATCH --ntasks-per-node=4
@@ -48,20 +48,20 @@ export QUDA_ENABLE_GDR=0
 . $chromaform/env_extra.sh
 module load python
 
-for zeta in 0 2 -2
+for zeta in 0 2 -2 4 -4 
 do
 
 name_stem="peram_bundle_${cfg}_z\${zeta}"
 peram_out=${scratch}/${ensemb}/prop_db/$cfg/${ensemb}.prop.n${Nevec}.light.z\${zeta}
 mkdir -p ${scratch}/${ensemb}/prop_db/
 
-/global/homes/j/jkarpie/run_scripts/gluon/make_peram_xml_zeta_all_T_strange.sh \
+/global/homes/j/jkarpie/run_scripts/gluon_a0p073_mpi280/make_peram_xml_zeta_all_T.sh \
       ${scratch_dir}/xml/\${name_stem}.ini.xml \
       ${cfg} \
       ${data_dir}/cfgs/${ensemb}_cfg_${cfg}.lime \
       $eig_out \
       \${peram_out} \
-      63 \
+      127 \
       \$zeta \
       $Nevec
 
